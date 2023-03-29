@@ -4,12 +4,9 @@ import classNames from 'classnames';
 import Type from '@/components/type/type';
 import styles from './header.module.scss';
 
-export default function Header({ loading, setLoading, speed, type, showLinkBackground }) {
+export default function Header({ loading, setLoading, fade }) {
     // State
     const [transitionBackgroundColor, setTransitionBackgroundColor] = useState(false);
-
-    // Typing speed modifiers
-    const titleMod = 12.5;
 
     // Name and Title
     const firstName = 'Stephen';
@@ -37,12 +34,7 @@ export default function Header({ loading, setLoading, speed, type, showLinkBackg
     const toEngineer = useRef();
 
     useEffect(() => {
-        return;
-        
-        const delay = type ?
-            delayAfter(firstName + lastName, speed) +
-            delayAfter(frontEnd + software + engineer, speed, titleMod * 1.5) :
-            2000;
+        const delay = 2000;
 
         setTimeout(async () => {
             if (!overlay.current || !ctr.current) {
@@ -59,7 +51,7 @@ export default function Header({ loading, setLoading, speed, type, showLinkBackg
             ctr.current.style.width = `${width}px`;
 
             // Animate name and title
-            const duration = speed * 7;
+            const duration = 70 * 7;
 
             await Promise.all([
                 anim(fromFirstName, toFirstName, duration),
@@ -76,7 +68,7 @@ export default function Header({ loading, setLoading, speed, type, showLinkBackg
         async function anim(from, to, duration) {
             const fromName = from.current
             const { color: fromColor, fontSize, height, marginBottom } = getComputedStyle(fromName);
-            const { color: toColor } = getComputedStyle(to.current);
+            const { color: toColor, fontSize: toFontSize } = getComputedStyle(to.current);
             const fromNamePos = fromName.getBoundingClientRect();
             const toNamePos = to.current.getBoundingClientRect();
 
@@ -96,7 +88,7 @@ export default function Header({ loading, setLoading, speed, type, showLinkBackg
                     color: toColor,
                     top: `${toNamePos.top}px`,
                     left: `${toNamePos.left}px`,
-                    fontSize: '12px',
+                    fontSize: toFontSize,
                     marginBottom: '0px',
                 }
             ], {
@@ -111,58 +103,67 @@ export default function Header({ loading, setLoading, speed, type, showLinkBackg
                 return 'done';
             }
         }
-    }, [loading, setLoading, speed, type]);
+    }, [loading, setLoading]);
+
+    const spacerStyle = { width: '1ch' };
 
     return (
         <>
             <header className={styles['header']}>
                 <Link href="/" aria-label="Stephen Matheis' personal website">
-                    <div className={classNames(styles['profile'], { [styles['loading']]: loading, [styles['link-background']]: showLinkBackground })}>
-                        <span ref={toFirstName} className={styles['name']}>{firstName}</span>
-                        <span className={styles['name']}> </span>
-                        <span ref={toLastName} className={styles['name']}>{lastName}</span>
-                        <span> </span>
-                        <span className={styles['nowrap']}>
+                    <div className={classNames(styles['profile'], { [styles['loading']]: loading, [styles['link-background']]: fade })}>
+                        <div className={styles['line']}>
+                            <span ref={toFirstName} className={styles['name']}>{firstName}</span>
+                            <span className={styles['name']} style={spacerStyle}> </span>
+                            <span ref={toLastName} className={styles['name']}>{lastName}</span>
+                        </div>
+                        <div className={styles['line']}>
                             <span ref={toFrontEnd} className={styles['title']}>{frontEnd}</span>
-                            <span className={styles['title']}> </span>
+                            <span className={styles['title']} style={spacerStyle}> </span>
                             <span ref={toSoftware} className={styles['title']}>{software}</span>
-                            <span className={styles['title']}> </span>
+                            <span className={styles['title']} style={spacerStyle}> </span>
                             <span ref={toEngineer} className={styles['title']}>{engineer}</span>
-                        </span>
+                        </div>
                     </div>
                 </Link>
+                {/* Links */}
+                <nav>
+                    <ol>
+                        <li>
+                            <Link href="/" aria-label="test">
+                                Experience
+                            </Link>
+                        </li>
+                        <li>
+                            <Link href="/" aria-label="test">
+                                Skills
+                            </Link>
+                        </li>
+                        <li>
+                            <Link href="/" aria-label="test">
+                                Projects
+                            </Link>
+                        </li>
+                        <li>
+                            <Link href="/" aria-label="test">
+                                Contact
+                            </Link>
+                        </li>
+                    </ol>
+                </nav>
             </header>
             {
                 loading &&
                 <div ref={overlay} className={classNames(styles['loading-overlay'], { [styles['background-color']]: transitionBackgroundColor })}>
                     <div ref={ctr} className={styles['ctr']}>
-                        {
-                            type ?
-                                <>
-                                    {/* Name */}
-                                    <Type ref={fromFirstName} content={firstName} speed={speed * 2 / 3} className={styles['name']} wrapperClass={styles['line-wrapper']} />
-                                    <Type ref={fromLastName} content={lastName} speed={speed * 2 / 3} delay={delayAfter(firstName, speed)} className={styles['name']} wrapperClass={styles['line-wrapper']} />
-
-                                    {/* Title */}
-                                    <Type ref={fromFrontEnd} content={frontEnd} speed={speed * 2 / 3} delay={delayAfter(firstName + lastName, speed, titleMod)} className={styles['title']} wrapperClass={styles['line-wrapper']} />
-                                    <Type ref={fromSoftware} content={software} speed={speed * 2 / 3} delay={delayAfter(firstName + lastName + frontEnd, speed, titleMod)} className={styles['title']} wrapperClass={styles['line-wrapper']} />
-                                    <Type ref={fromEngineer} content={engineer} speed={speed * 2 / 3} delay={delayAfter(firstName + lastName + frontEnd + software, speed, titleMod)} className={styles['title']} wrapperClass={styles['line-wrapper']} />
-                                </> :
-                                <>
-                                    <span ref={fromFirstName} className={styles['name']}>{firstName}</span>
-                                    <span ref={fromLastName} className={styles['name']}>{lastName}</span>
-                                    <span ref={fromFrontEnd} className={styles['title']}>{frontEnd}</span>
-                                    <span ref={fromSoftware} className={styles['title']}>{software}</span>
-                                    <span ref={fromEngineer} className={styles['title']}>{engineer}</span>
-                                </>
-                        }
+                        <span ref={fromFirstName} className={styles['name']}>{firstName}</span>
+                        <span ref={fromLastName} className={styles['name']}>{lastName}</span>
+                        <span ref={fromFrontEnd} className={styles['title']}>{frontEnd}</span>
+                        <span ref={fromSoftware} className={styles['title']}>{software}</span>
+                        <span ref={fromEngineer} className={styles['title']}>{engineer}</span>
                     </div>
                 </div>
             }
         </>
     );
-}
-
-function delayAfter(text, speed, modifier = 0) {
-    return ((text.length + modifier) * speed) + (speed * 2);
 }

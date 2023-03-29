@@ -3,22 +3,21 @@ import Head from 'next/head';
 import classNames from 'classnames';
 import Header from '@/components/header/header';
 import Main from '@/components/main/main';
-import styles from '../styles/resume.module.scss';
+import styles from '@/styles/about.module.scss';
 
 export default function Home() {
     const [loading, setLoading] = useState(true);
     const [fade, setFade] = useState(false);
     const speed = 70;
-    const shouldType = false;
 
-    // useEffect(() => {
-    //     if (!loading) {
-    //         document.body.classList.remove('hidden');
-    //         setFade(true);
-    //     }
+    useEffect(() => {
+        if (!loading) {
+            document.body.classList.remove('hidden');
+            setFade(true);
+        }
 
-    //     return () => document.body.removeAttribute('style');
-    // }, [loading]);
+        return () => document.body.removeAttribute('style');
+    }, [loading]);
 
     return (
         <>
@@ -26,11 +25,9 @@ export default function Home() {
                 <title>Stephen Matheis</title>
                 <meta name="description" content="Stephen Matheis" />
             </Head>
-            <div id={styles['resume']} className={classNames({ [styles['loading']]: loading })}>
+            <div id={styles['about']} className={classNames({ [styles['loading']]: loading })}>
                 <Header
-                    type={shouldType}
-                    speed={speed}
-                    showLinkBackground={fade}
+                    fade={fade}
                     loading={loading}
                     setLoading={setLoading}
                 />
